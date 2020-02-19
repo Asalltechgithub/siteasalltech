@@ -1,0 +1,84 @@
+﻿@page "/Usuario"
+
+@using BlazorApp6.Models
+@using BlazorApp6.Data
+@inject NavigationManager nav
+@inject UserService service
+@inject Blazored.LocalStorage.ILocalStorageService localstorage
+@inject IJSRuntime jsRuntime
+
+<h3>User</h3>
+
+
+<div class="container">
+
+    <div class="row">
+        <button class="btn btn-primary">Adicionar Usuario</button>
+    </div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th> Nome do Usuario</th>
+                <th> Perfil </th>
+                <th>Acões</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @{
+
+                if (u == null)
+                {
+                    <tr>
+                        <td>Carregando ... </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var users in u)
+                    {
+                        <tr>
+                            <td>@users.Username </td>
+                            <td>@users.Grupo.NomeGrupoUsuario </td>
+                            <td> <a href="/usuario/edit/@users.Id" class="btn btn-success"> Editar</a> || <a href="/usuario/detail/@users.Id" class="btn btn-info"> detalhes</a> || <a href="/usuario/remove/@users.Id" class="btn btn-danger"> Excluir</a> </td>
+                        </tr>
+
+                    }
+
+                }
+
+            }
+
+        </tbody>
+        <tr>
+        </tr>
+    </table>
+
+
+</div>
+
+@code {
+
+    List<Usuario> u = new List<Usuario>();
+
+
+    
+    protected override async Task OnInitializedAsync()
+    {
+
+         
+       
+            u = await service.GetUsuarios();
+        if (u == null)
+        {
+            nav.NavigateTo("/error");
+        }
+
+        
+
+    }
+   
+
+
+
+}

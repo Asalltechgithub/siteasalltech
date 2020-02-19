@@ -1,0 +1,88 @@
+﻿@page "/"
+@layout LoginLayout
+@using BlazorApp6.Data
+@inject UserService LoginService
+@inject NavigationManager nav
+@using BlazorApp6.Models
+@inject Blazored.LocalStorage.ILocalStorageService localstorage 
+
+<h1> Login </h1>
+@{
+    if (error == true)
+    {
+        <div class="alert-danger"> Login invalido</div>
+    }
+    else
+    {
+        <div class="alert-danger disabled"></div>
+    }
+
+
+}
+
+<div class="Container">
+    <div class=" form-group">
+        <label>
+            Nome do Usuario
+
+            <input type="text" class="form-control" @bind="@_UserName" required />
+
+        </label>"
+    </div>
+    <div class=" form-group">
+        <label>
+            Senha de Acesso
+
+            <input type="password" class="form-control" @bind="@_Password" required />
+
+        </label>"
+        <button type="submit" class="btn btn-success" @onclick="@Logar">Entrar</button>
+    </div>
+</div>
+
+@code {
+
+    static string _UserName;
+    static string _Password;
+    bool error = false;
+
+    Usuario usuario = new Usuario();
+    Usuario u;
+    Token t;
+
+
+    public void Logar()
+    {
+        LoginService l = new LoginService();
+
+        usuario.Username = _UserName;
+        usuario.Password = _Password;
+
+        var tuple = l.login(usuario);
+        if ( tuple.Item3 == true)
+        {
+            u =  tuple.Item2;
+            t = tuple.Item1;
+            updateLocalstorage(t);
+            nav.NavigateTo("/Usuario");
+
+        }
+        else
+        {
+            error = true;
+        }
+
+
+    }
+    public async void updateLocalstorage(Token obj)
+    {
+       await localstorage.ClearAsync();
+       await localstorage.SetItemAsync("Token", obj.AcessToken);
+        // localstorage.SetItemAsync("usuario", u);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+}
